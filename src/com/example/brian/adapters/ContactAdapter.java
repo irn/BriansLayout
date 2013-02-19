@@ -3,7 +3,9 @@ package com.example.brian.adapters;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
@@ -42,7 +44,7 @@ public class ContactAdapter extends CursorAdapter {
         super(context, c);
         mContext = context;
         defaultItemDrawable = mContext.getResources().getDrawable(R.drawable.contact_drawable);
-        itemWidth = (int) (defaultItemDrawable.getMinimumWidth()* 1.3);
+        itemWidth = (int) (defaultItemDrawable.getMinimumWidth()* 1.5);
     }
 
 
@@ -52,9 +54,9 @@ public class ContactAdapter extends CursorAdapter {
         TextView contactView = new TextView(context);
 
         Drawable mDrawable = mContext.getResources().getDrawable(R.drawable.contact_drawable);
-        contactView.setLayoutParams(new GridView.LayoutParams(itemWidth, GridView.LayoutParams.WRAP_CONTENT));
+        contactView.setLayoutParams(new GridView.LayoutParams(itemWidth, itemWidth));
         contactView.setText(cursor.getString(0));
-        contactView.setGravity(Gravity.CENTER_HORIZONTAL);
+        contactView.setGravity(Gravity.CENTER | Gravity.TOP);
         contactView.setCompoundDrawablesWithIntrinsicBounds(null, mDrawable, null, null);
 
         return contactView;
@@ -68,8 +70,8 @@ public class ContactAdapter extends CursorAdapter {
         if (view == null){
             contactView = new TextView(context);
 
-            contactView.setLayoutParams(new GridView.LayoutParams(itemWidth, GridView.LayoutParams.WRAP_CONTENT));
-            contactView.setGravity(Gravity.CENTER_HORIZONTAL);
+            contactView.setLayoutParams(new GridView.LayoutParams(itemWidth, itemWidth));
+            contactView.setGravity(Gravity.CENTER | Gravity.TOP);
         } else {
             contactView = (TextView) view;
         }
@@ -102,19 +104,28 @@ public class ContactAdapter extends CursorAdapter {
 
             try {
 
-//                InputStream is = context.getContentResolver().openInputStream(uri);
-                BitmapFactory.Options options= new BitmapFactory.Options();
                 InputStream is = null;
                 if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
                     is = ContactsContract.Contacts.openContactPhotoInputStream(context.getContentResolver(), uri, true);
                 else
                     is = ContactsContract.Contacts.openContactPhotoInputStream(context.getContentResolver(), uri);
-//                Bitmap bitmap = BitmapFactory.decodeStream(is, null, options);
-//                if (bitmap.getWidth() > 0 || bitmap.getHeight() > 100){
-//                    bitmap = Bitmap.createScaledBitmap(bitmap,100, 100, true);
-//                    drawable = new BitmapDrawable(bitmap);
-//                }
-                drawable = Drawable.createFromStream(is, "photo");
+
+                BitmapFactory.Options options= new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeStream(is, null, options);
+                if (options.outWidth > itemWidth || options.outHeight > itemWidth){
+                    float minDivide = Math.min((float)itemWidth/ 1.5f / options.outWidth, (float)itemWidth / 1.5f/ options.outHeight);
+                    int dstWidth = (int) (options.outWidth * minDivide);
+                    int dstHeight = (int) (options.outHeight * minDivide);
+                    is.reset();
+                    Bitmap bitmap = BitmapFactory.decodeStream(is);
+                    drawable = new BitmapDrawable(Bitmap.createScaledBitmap(bitmap, dstWidth, dstHeight, true));
+                    bitmap.recycle();
+                } else {
+                    is.reset();
+                    drawable = Drawable.createFromStream(is, "photo");
+                }
+
                 is.close();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
