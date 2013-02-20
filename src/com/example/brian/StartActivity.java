@@ -31,7 +31,7 @@ public class StartActivity extends Activity {
         super.onResume();    //To change body of overridden methods use File | Settings | File Templates.
 
         ContentResolver cr = getContentResolver();
-        //TODO this comment below take only contacts which contain photo
+        //TODO this comment below gets only contacts which contain photo
 //        Cursor mCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, contactsProjection, ContactsContract.Contacts.PHOTO_ID + ">?", new String[]{"0"}, null);
         Cursor mCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, contactsProjection, null, null, ContactsContract.Contacts.DISPLAY_NAME);
         if (mCursor != null && mCursor.getCount() > 0){
