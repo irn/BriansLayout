@@ -30,11 +30,9 @@ import java.io.InputStream;
  * Time: 9:13
  * To change this template use File | Settings | File Templates.
  */
-public class ContactAdapter extends CursorAdapter {
+public class ContactAdapter extends CursorAdapter implements View.OnClickListener {
 
     private Context mContext;
-
-    private int mResourcesId;
 
     private int itemWidth;
 
@@ -66,7 +64,6 @@ public class ContactAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         //To change body of implemented methods use File | Settings | File Templates.
         TextView contactView;
-//        LayerDrawable mDrawable = (LayerDrawable) mContext.getResources().getDrawable(R.drawable.contact_drawable);
         if (view == null){
             contactView = new TextView(context);
 
@@ -81,20 +78,18 @@ public class ContactAdapter extends CursorAdapter {
             Drawable drawable = openPhoto(context, photoId, contactId);
             if (drawable != null){
                 LayerDrawable mDrawable = new LayerDrawable(new Drawable[]{drawable, context.getResources().getDrawable(R.drawable.rings)});
-//                mDrawable.setId(0, 777);
-//                mDrawable.setDrawableByLayerId(777, drawable);
                 contactView.setCompoundDrawablesWithIntrinsicBounds(null, mDrawable, null, null);
             } else {
                 contactView.setCompoundDrawablesWithIntrinsicBounds(null, (LayerDrawable) mContext.getResources().getDrawable(R.drawable.contact_drawable), null, null);
             }
 
-//            contactView.setLayoutParams(new GridView.LayoutParams((int) (mDrawable.getMinimumWidth()* 1.3), GridView.LayoutParams.WRAP_CONTENT));
-//            contactView.setCompoundDrawablesWithIntrinsicBounds(null, mDrawable, null, null);
         } else {
             contactView.setCompoundDrawablesWithIntrinsicBounds(null, (LayerDrawable) mContext.getResources().getDrawable(R.drawable.contact_drawable), null, null);
         }
 
+        contactView.setTag(contactId);
         contactView.setText(cursor.getString(0));
+        contactView.setOnClickListener(this);
 
     }
 
@@ -112,25 +107,28 @@ public class ContactAdapter extends CursorAdapter {
                 else
                     is = ContactsContract.Contacts.openContactPhotoInputStream(context.getContentResolver(), uri);
 
-                BitmapFactory.Options options= new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                BitmapFactory.decodeStream(is, null, options);
-                if (options.outWidth > itemWidth || options.outHeight > itemWidth){
-                    float minDivide = Math.min((float)itemWidth/ 1.5f / options.outWidth, (float)itemWidth / 1.5f/ options.outHeight);
-                    int dstWidth = (int) (options.outWidth * minDivide);
-                    int dstHeight = (int) (options.outHeight * minDivide);
-                    is.reset();
-                    Bitmap bitmap = BitmapFactory.decodeStream(is);
-                    if (bitmap != null){
-                        drawable = new BitmapDrawable(Bitmap.createScaledBitmap(bitmap, dstWidth, dstHeight, true));
-                        bitmap.recycle();
-                    }
-                } else {
-                    is.reset();
-                    drawable = Drawable.createFromStream(is, "photo");
-                }
+                if (is != null){
 
-                is.close();
+                    BitmapFactory.Options options= new BitmapFactory.Options();
+                    options.inJustDecodeBounds = true;
+                    BitmapFactory.decodeStream(is, null, options);
+                    if (options.outWidth > itemWidth || options.outHeight > itemWidth){
+                        float minDivide = Math.min((float)itemWidth/ 1.5f / options.outWidth, (float)itemWidth / 1.5f/ options.outHeight);
+                        int dstWidth = (int) (options.outWidth * minDivide);
+                        int dstHeight = (int) (options.outHeight * minDivide);
+                        is.reset();
+                        Bitmap bitmap = BitmapFactory.decodeStream(is);
+                        if (bitmap != null){
+                            drawable = new BitmapDrawable(Bitmap.createScaledBitmap(bitmap, dstWidth, dstHeight, true));
+                            bitmap.recycle();
+                        }
+                    } else {
+                        is.reset();
+                        drawable = Drawable.createFromStream(is, "photo");
+                    }
+
+                    is.close();
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             } catch (IOException e) {
@@ -138,11 +136,18 @@ public class ContactAdapter extends CursorAdapter {
             }
         }
 
-//        Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(context.getContentResolver(), photoId, MediaStore.Images.Thumbnails.MICRO_KIND, null);
-//        if (bitmap != null)
-//            drawable = new BitmapDrawable(bitmap);
-
         return  drawable;
     }
 
+    /**
+     * This is listener for perform something when user clicked on some Contact
+     * @param v View which was clicked. It has Tag with contact ID
+     */
+    @Override
+    public void onClick(View v) {
+        //To change body of implemented methods use File | Settings | File Templates.
+        if (v.getTag() != null && v.getTag() instanceof Integer){
+            Integer contactId = (Integer) v.getTag();
+        }
+    }
 }
