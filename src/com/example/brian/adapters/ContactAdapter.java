@@ -84,6 +84,8 @@ public class ContactAdapter extends CursorAdapter {
 //                mDrawable.setId(0, 777);
 //                mDrawable.setDrawableByLayerId(777, drawable);
                 contactView.setCompoundDrawablesWithIntrinsicBounds(null, mDrawable, null, null);
+            } else {
+                contactView.setCompoundDrawablesWithIntrinsicBounds(null, (LayerDrawable) mContext.getResources().getDrawable(R.drawable.contact_drawable), null, null);
             }
 
 //            contactView.setLayoutParams(new GridView.LayoutParams((int) (mDrawable.getMinimumWidth()* 1.3), GridView.LayoutParams.WRAP_CONTENT));
@@ -119,8 +121,10 @@ public class ContactAdapter extends CursorAdapter {
                     int dstHeight = (int) (options.outHeight * minDivide);
                     is.reset();
                     Bitmap bitmap = BitmapFactory.decodeStream(is);
-                    drawable = new BitmapDrawable(Bitmap.createScaledBitmap(bitmap, dstWidth, dstHeight, true));
-                    bitmap.recycle();
+                    if (bitmap != null){
+                        drawable = new BitmapDrawable(Bitmap.createScaledBitmap(bitmap, dstWidth, dstHeight, true));
+                        bitmap.recycle();
+                    }
                 } else {
                     is.reset();
                     drawable = Drawable.createFromStream(is, "photo");

@@ -3,18 +3,9 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
        android:shape="ring" android:innerRadius="46dp"
        android:thickness="80dp" android:useLevel="false" >
-    <size android:width="82dp" android:height="82dp"/>
+    <size android:width="100dp" android:height="100dp"/>
 
     <stroke android:color="#a0bdbf" android:width="3dp"/>
-        <solid android:color="@color/transparent"/>
+        <solid android:color="@color/background_color"/>
 
 </shape>
-
-<!--<shape xmlns:android="http://schemas.android.com/apk/res/android"-->
-       <!--android:shape="ring"-->
-       <!--android:innerRadius="0dp"-->
-       <!--android:thickness="30dp"-->
-       <!--android:useLevel="false">-->
-    <!---->
-    <!--<stroke android:color="#FF0000" android:width="4dp"/>-->
-<!--</shape>-->
