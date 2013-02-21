@@ -5,10 +5,12 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import com.example.brian.adapters.ContactAdapter;
 
-public class StartActivity extends Activity {
+public class StartActivity extends Activity implements AdapterView.OnItemClickListener {
     /**
      * Called when the activity is first created.
      */
@@ -23,6 +25,7 @@ public class StartActivity extends Activity {
         setContentView(R.layout.main);
 
         mGridView = (GridView) findViewById(R.id.gridView);
+        mGridView.setOnItemClickListener(this);
 
     }
 
@@ -38,6 +41,19 @@ public class StartActivity extends Activity {
             ContactAdapter adapter = new ContactAdapter(this, mCursor);
             mGridView.setAdapter(adapter);
         }
+
+    }
+
+    /**
+     * This is first way to catch click on the contact
+     * @param parent
+     * @param view
+     * @param position
+     * @param id
+     */
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        long contactId = id;
 
     }
 }

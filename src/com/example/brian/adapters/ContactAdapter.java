@@ -89,7 +89,8 @@ public class ContactAdapter extends CursorAdapter implements View.OnClickListene
 
         contactView.setTag(contactId);
         contactView.setText(cursor.getString(0));
-        contactView.setOnClickListener(this);
+        //TODO This listener is second way to catch click on some contact
+//        contactView.setOnClickListener(this);
 
     }
 
@@ -146,8 +147,8 @@ public class ContactAdapter extends CursorAdapter implements View.OnClickListene
     @Override
     public void onClick(View v) {
         //To change body of implemented methods use File | Settings | File Templates.
-        if (v.getTag() != null && v.getTag() instanceof Integer){
-            Integer contactId = (Integer) v.getTag();
+        if (v.getTag() != null && v.getTag() instanceof Long){
+            Long contactId = (Long) v.getTag();
         }
     }
 }
